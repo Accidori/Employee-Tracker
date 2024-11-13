@@ -101,7 +101,32 @@ async function viewDepartments() {}
 
 
 //VIEW ROLES
-async function viewRoles() {}
+async function viewRoles() {
+    const client = await connect();
+    try {
+        const result = await client.query(
+            // 'SELECT * FROM employees'
+            `SELECT role from employees`
+            + ' LEFT JOIN roles ON employees.role_id = roles.id'
+            + ' LEFT JOIN departments ON roles.department_id = departments.id'
+        );
+
+        if (result.rows.length === 0) {
+            console.log('No roles found');
+        }else{
+            console.table(result.rows);
+        }
+
+
+
+
+
+    }catch (error){
+        console.error('Failed to view employees:', error.stack);
+        mainMenu();
+
+    }
+}
 
 
 //VIEW EMPLOYEES
