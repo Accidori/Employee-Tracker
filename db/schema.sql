@@ -19,5 +19,3 @@ CREATE TABLE IF NOT EXISTS employee (
     role_id INTEGER REFERENCES role(id),
     manager_id INTEGER REFERENCES employee(id)
 );
-
-GRANT ALL PRIVILEGES ON ALL TABLES IN SCHEMA public TO username;

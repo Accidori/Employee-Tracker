@@ -12,17 +12,19 @@ const { Client } = pkg;
 dotenv.config();
 
 
-/* CLIENT */
+/* CLIENT!!! */
 
+const client = new Client({
+    host: process.env.DB_HOST,
+    user: process.env.DB_USER,
+    password: process.env.DB_PASSWORD,
+    database: process.env.DB_NAME,
+    port: process.env.DB_PORT,
+});
+
+
+/* Connect to database */
 async function connect() {
-    const client = new Client({
-        host: process.env.DB_HOST,
-        user: process.env.DB_USER,
-        password: process.env.DB_PASSWORD,
-        database: process.env.DB_NAME,
-        port: process.env.DB_PORT,
-    });
-
     try {
         await client.connect();
         console.log('Connected to the database successfully');
@@ -34,8 +36,9 @@ async function connect() {
 }
 
 
-
 /* MAIN MENU */
+
+await connect();
 
 async function mainMenu() {
     const answer = await inquirer.prompt({
@@ -92,59 +95,52 @@ async function mainMenu() {
 
 // VIEW DEPARTMENTS
 async function viewDepartments() {
-    const client = await connect();
-    try{
-        const result = await client.query(`SELECT * FROM department`)
-
+    try {
+        const result = await client.query('SELECT * FROM department');
         if (result.rows.length === 0) {
             console.log('No departments found');
-        }else{
-            consoleTable(result.rows);
+        } else {
+            console.table(result.rows);
         }
-    } catch (error){
+    } catch (error) {
         console.error('Failed to view departments:', error.stack);
-        mainMenu();
-
     }
+    mainMenu();
 }
 
 
 //VIEW ROLES
 async function viewRoles() {
-    const client = await connect();
     try {
         const result = await client.query(`SELECT * from role`);
 
         if (result.rows.length === 0) {
             console.log('No roles found');
         }else{
-            consoleTable(result.rows);
+            console.table(result.rows);
         }
-
     }catch (error){
         console.error('Failed to view roles:', error.stack);
-        mainMenu();
-
     }
+    mainMenu();
 }
 
 
 //VIEW EMPLOYEES
 async function viewEmployees() {
-    const client = await connect();
     try {
         const result = await client.query(`SELECT * FROM employee`);
 
         if (result.rows.length === 0) {
             console.log('No employees found');
         }else{
-            consoleTable(result.rows);
+            console.table(result.rows);
         }
 
     }catch (error){
         console.error('Failed to view employees:', error.stack);
-        mainMenu();
     }
+    mainMenu();
 }
 
 
@@ -153,38 +149,32 @@ async function viewEmployees() {
 /* ADD */
 
 
-// ADDS DEPARTMENTS
+// ADD DEPARTMENT
 async function addDepartment() {
-    const client = await connect();
-    try{
-        const answer = await inquirer.prompt([
+    try {
+        const answers = await inquirer.prompt([
             {
                 type: 'input',
                 name: 'name',
                 message: 'Enter the name of the department:',
             }
         ]);
-    } catch (error){
-        const query = 'INSERT INTO departments (name) VALUES ($1)';
-        client.query(query, [answer.name], (err, res) => {
-            if (err) {
-                console.error('Error executing query', err.stack);
-                return;
-            }
-            console.log('Department added successfully');
-        });
+
+        const query = 'INSERT INTO department (name) VALUES ($1)';
+        await client.query(query, [answers.name]);
+        console.log('Department added successfully');
+
+    } catch (error) {
+        console.error('Error executing query', error.stack);
     }
     mainMenu();
 }
 
-///fix the add department function
-
 
 // ADDS EMPLOYEE
 async function addEmployee() {
-    const client = await connect();
     try{
-        const answer = await inquirer.prompt([
+        const answers = await inquirer.prompt([
             {
                 type: 'input',
                 name: 'firstName',
@@ -208,12 +198,12 @@ async function addEmployee() {
         ])
 
 
-        const query = 'INSERT INTO employees (first_name, last_name, role_id, manager_id) VALUES ($1, $2, $3, $4)';
+        const query = `INSERT INTO employee (first_name, last_name, role_id, manager_id) VALUES ($1, $2, $3, $4)`;
 
         await client.query(query, [answers.firstName, answers.lastName, answers.roleId, answers.managerId]);
         console.log('Employee added successfully');
     } catch (error) {
-        console.error('Error executing query', console.error());
+        console.error('Error executing query', error.stack);
         return;
     }
     mainMenu();
@@ -221,10 +211,8 @@ async function addEmployee() {
 
 // ADDS ROLE
 async function addRole() {
-    const client = await connect();
-
     try{
-        const answer = await inquirer.prompt([
+        const answers = await inquirer.prompt([
             {
                 type: 'input',
                 name: 'title',
@@ -248,7 +236,7 @@ async function addRole() {
 
         console.log('Role added successfully');
     } catch (error){
-        console.error('Error executing query', err.stack);
+        console.error('Error executing query', error.stack);
         return;
    
     }
@@ -263,8 +251,6 @@ async function addRole() {
 
 
 async function updateEmployee() {
-    const client = await connect();
-
     try {
         // get all roles
         const roleResult = await client.query('SELECT * FROM role');
