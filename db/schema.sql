@@ -1,25 +1,23 @@
-CREATE DATABASE employee_tracker;
+\c employee_tracker
 
-USE employee_tracker;
-
-CREATE TABLE department (
+CREATE TABLE IF NOT EXISTS department (
     id SERIAL PRIMARY KEY,
     name VARCHAR(30) UNIQUE NOT NULL
 );
 
- 
-CREATE TABLE role (
+CREATE TABLE IF NOT EXISTS role (
     id SERIAL PRIMARY KEY,
     title VARCHAR(30) UNIQUE NOT NULL,
     salary DECIMAL NOT NULL,
-    department_id INTEGER NOT NULL
+    department_id INTEGER REFERENCES department(id)
 );
 
-
-CREATE TABLE employee (
+CREATE TABLE IF NOT EXISTS employee (
     id SERIAL PRIMARY KEY,
     first_name VARCHAR(30) NOT NULL,
     last_name VARCHAR(30) NOT NULL,
-    role_id INTEGER NOT NULL,
-    manager_id INT,
+    role_id INTEGER REFERENCES role(id),
+    manager_id INTEGER REFERENCES employee(id)
 );
+
+GRANT ALL PRIVILEGES ON ALL TABLES IN SCHEMA public TO username;
