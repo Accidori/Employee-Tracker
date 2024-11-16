@@ -19,7 +19,7 @@ Then, run  using:
 
 # How To Use
 
-        (insert video here somehow)
+        ![Walkthrough Video](EmployeeTrackerGuide.mp4)
 
 
 ## License
