@@ -9,11 +9,17 @@ This employee tracker was created to manage departments, roles, and employees in
 
 To install, simply use: 
     
-        git clone
+        git clone (this project repo)
 
-to clone the repo in your coding software and  run  using: 
+to clone the repo in your coding software. 
+
+Then, run  using: 
 
         node index.js
+
+# How To Use
+
+        (insert video here somehow)
 
 
 ## License
@@ -24,6 +30,7 @@ For more information, please visit https://opensource.org/licenses/MIT.
     
 
 ![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)
+
 
 ## How to Contribute
 
